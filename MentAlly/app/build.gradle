@@ -4,6 +4,10 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
+    
+    // FIX 1: Explicitly set NDK version to fix the stripDebugDebugSymbols failure (NDK issue).
+    ndkVersion '25.2.9519653'
+    
     defaultConfig {
         applicationId "com.pacman.MentAlly"
         minSdkVersion 28
@@ -19,13 +23,47 @@ android {
         }
     }
     
-    // 👇 ADD THIS BLOCK HERE
+    // FIX 2: Added packagingOptions to solve the META-INF/okio.kotlin_module conflict.
     packagingOptions {
         exclude 'META-INF/okio.kotlin_module'
     }
-    // 👆 END OF NEW BLOCK
 }
 
 dependencies {
-    // ... your dependencies ...
+    // Variable for Firebase UI consistency
+    def firebase_ui_version = '8.0.2'
+    
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    
+    // Firebase Core
+    implementation 'com.google.firebase:firebase-storage:17.0.0'
+    implementation 'com.google.firebase:firebase-database:16.0.4'
+    implementation 'com.google.firebase:firebase-analytics:17.2.2'
+    implementation 'com.google.firebase:firebase-auth:19.2.0'
+    implementation 'com.google.firebase:firebase-firestore:21.4.0'
+    
+    // FIX 3: Updated Firebase UI versions to the consistent 8.0.2 to help resolve theme conflicts.
+    implementation "com.firebaseui:firebase-ui-firestore:$firebase_ui_version"
+    implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_version"
+    
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    
+    //glide
+    implementation 'com.github.bumptech.glide:glide:4.4.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
+
+    //circle imageview
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
+
+    // Testing
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
+//added all firebase implementations to easily connect the app to the firebase database.
