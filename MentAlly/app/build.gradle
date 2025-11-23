@@ -5,7 +5,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     
-    // FIX 1: Explicitly set NDK version to fix the stripDebugDebugSymbols failure (NDK issue).
+    // FIX 1: Explicitly set an NDK version available on your CI runner.
     ndkVersion '26.3.11579264'
     
     defaultConfig {
@@ -21,9 +21,15 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        // FIX 2: Disable debug symbol stripping to resolve the recurring ExecException error on CI.
+        debug {
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }
+        }
     }
     
-    // FIX 2: Added packagingOptions to solve the META-INF/okio.kotlin_module conflict.
+    // FIX 3: Added packagingOptions to solve the META-INF/okio.kotlin_module conflict.
     packagingOptions {
         exclude 'META-INF/okio.kotlin_module'
     }
@@ -47,7 +53,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.2.0'
     implementation 'com.google.firebase:firebase-firestore:21.4.0'
     
-    // FIX 3: Updated Firebase UI versions to the consistent 8.0.2 to help resolve theme conflicts.
+    // FIX 4: Updated Firebase UI versions to the consistent 8.0.2.
     implementation "com.firebaseui:firebase-ui-firestore:$firebase_ui_version"
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_version"
     
