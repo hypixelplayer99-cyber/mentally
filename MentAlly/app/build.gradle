@@ -21,17 +21,15 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        // FIX 2: Disable debug symbol stripping to resolve the recurring ExecException error on CI.
-        debug {
-            ndk {
-                debugSymbolLevel 'SYMBOL_TABLE'
-            }
-        }
+        // Removed the unsupported 'debug' block that caused the last error.
+        debug {}
     }
     
-    // FIX 3: Added packagingOptions to solve the META-INF/okio.kotlin_module conflict.
+    // FIX 2 & 3: Fix file duplication and disable symbol stripping (the old way).
     packagingOptions {
         exclude 'META-INF/okio.kotlin_module'
+        // FIX: This disables the problematic ':app:stripDebugDebugSymbols' task.
+        doNotStrip '**/lib*.so'
     }
 }
 
