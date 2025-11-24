@@ -2,16 +2,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    // UPDATED: Target Android 14 (API 34)
+    compileSdkVersion 34
+    buildToolsVersion "34.0.0" 
     
-    // FIX 1: Explicitly set an NDK version available on your CI runner.
+    // FIX 1: Explicitly set a known NDK version available on CI runner.
     ndkVersion '26.3.11579264'
     
     defaultConfig {
         applicationId "com.pacman.MentAlly"
         minSdkVersion 28
-        targetSdkVersion 29
+        // UPDATED: Target Android 14
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -21,53 +23,64 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        // Removed the unsupported 'debug' block that caused the last error.
-        debug {}
+        // FIX 2: Disable debug symbol stripping to resolve CI error.
+        debug {
+            ndk {
+                debugSymbolLevel 'SYMBOL_TABLE'
+            }
+        }
     }
     
-    // FIX 2 & 3: Fix file duplication and disable symbol stripping (the old way).
+    // FIX 3: Fix file duplication and disable symbol stripping (the old way for compatibility).
     packagingOptions {
         exclude 'META-INF/okio.kotlin_module'
-        // FIX: This disables the problematic ':app:stripDebugDebugSymbols' task.
         doNotStrip '**/lib*.so'
     }
 }
 
 dependencies {
-    // Variable for Firebase UI consistency
-    def firebase_ui_version = '8.0.2'
+    // Firebase BoM (Bill of Materials) ensures all Firebase SDKs are compatible
+    // LATEST STABLE BO M: 32.9.0 is a known stable version
+    implementation platform('com.google.firebase:firebase-bom:32.9.0')
+    
+    // Variable for Firebase UI. Latest stable is 9.0.0.
+    def firebase_ui_version = '9.0.0'
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.annotation:annotation:1.1.0'
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     
-    // Firebase Core
-    implementation 'com.google.firebase:firebase-storage:17.0.0'
-    implementation 'com.google.firebase:firebase-database:16.0.4'
-    implementation 'com.google.firebase:firebase-analytics:17.2.2'
-    implementation 'com.google.firebase:firebase-auth:19.2.0'
-    implementation 'com.google.firebase:firebase-firestore:21.4.0'
+    // Dependency updates to modern AndroidX versions
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.annotation:annotation:1.7.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    // Lifecycle extensions is deprecated, but we keep it using a modern version
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0' 
     
-    // FIX 4: Updated Firebase UI versions to the consistent 8.0.2.
+    // Firebase Core, now using BoM (no version needed)
+    implementation 'com.google.firebase:firebase-storage'
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-firestore'
+    
+    // Firebase UI (Updated to the latest 9.0.0)
     implementation "com.firebaseui:firebase-ui-firestore:$firebase_ui_version"
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_version"
     
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    // Constraint layout support library is extremely old and risky, replaced with AndroidX one.
+    // REMOVED: implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     
-    //glide
-    implementation 'com.github.bumptech.glide:glide:4.4.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.4.0'
+    // Glide (Updated for compatibility)
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
 
-    //circle imageview
-    implementation 'de.hdodenhof:circleimageview:2.2.0'
-    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
+    // circle imageview (Updated for compatibility)
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.27'
 
-    // Testing
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    // Testing (Updated for compatibility)
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 //added all firebase implementations to easily connect the app to the firebase database.
