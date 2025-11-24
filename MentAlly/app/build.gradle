@@ -23,15 +23,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        // FIX 2: Disable debug symbol stripping to resolve CI error.
-        debug {
-            ndk {
-                debugSymbolLevel 'SYMBOL_TABLE'
-            }
-        }
+        // FIX 2: REMOVED the unsupported NDK block that caused the crash.
+        // We rely on 'doNotStrip' in packagingOptions instead.
+        debug {}
     }
     
-    // FIX 3: Fix file duplication and disable symbol stripping (the old way for compatibility).
+    // FIX 3 & 4: Fix file duplication and disable symbol stripping (the compatible way).
     packagingOptions {
         exclude 'META-INF/okio.kotlin_module'
         doNotStrip '**/lib*.so'
@@ -39,11 +36,10 @@ android {
 }
 
 dependencies {
-    // Firebase BoM (Bill of Materials) ensures all Firebase SDKs are compatible
-    // LATEST STABLE BO M: 32.9.0 is a known stable version
+    // Firebase BoM (Bill of Materials) for consistent versions
     implementation platform('com.google.firebase:firebase-bom:32.9.0')
     
-    // Variable for Firebase UI. Latest stable is 9.0.0.
+    // Variable for Firebase UI.
     def firebase_ui_version = '9.0.0'
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -53,7 +49,6 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.annotation:annotation:1.7.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    // Lifecycle extensions is deprecated, but we keep it using a modern version
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0' 
     
     // Firebase Core, now using BoM (no version needed)
@@ -63,12 +58,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
     
-    // Firebase UI (Updated to the latest 9.0.0)
+    // Firebase UI (Updated to 9.0.0)
     implementation "com.firebaseui:firebase-ui-firestore:$firebase_ui_version"
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_version"
-    
-    // Constraint layout support library is extremely old and risky, replaced with AndroidX one.
-    // REMOVED: implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     
     // Glide (Updated for compatibility)
     implementation 'com.github.bumptech.glide:glide:4.16.0'
