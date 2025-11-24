@@ -1,12 +1,17 @@
+// app/build.gradle
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jitpack.io" }
+    }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
-// CRITICAL FIX: Explicitly define repositories for this module to find Firebase BoM
-repositories {
-    google()
-    mavenCentral()
-    maven { url "https://jitpack.io" }
-}
+// Removed the redundant repositories block that was here before
 
 android {
     // UPDATED: Target Android 14 (API 34)
