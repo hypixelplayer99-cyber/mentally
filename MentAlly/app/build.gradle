@@ -1,12 +1,19 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
+// CRITICAL FIX: Explicitly define repositories for this module to find Firebase BoM
+repositories {
+    google()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+
 android {
     // UPDATED: Target Android 14 (API 34)
     compileSdkVersion 34
-    buildToolsVersion "30.0.3" 
+    buildToolsVersion "30.0.3" // Stable Build Tools Version
     
-    // FIX 1: Explicitly set a known NDK version available on CI runner.
+    // FIX 1: Explicitly set NDK version available on CI runner.
     ndkVersion '26.3.11579264'
     
     defaultConfig {
@@ -23,12 +30,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        // FIX 2: REMOVED the unsupported NDK block that caused the crash.
-        // We rely on 'doNotStrip' in packagingOptions instead.
+        // Build types structure
         debug {}
     }
     
-    // FIX 3 & 4: Fix file duplication and disable symbol stripping (the compatible way).
+    // FIX 2 & 3: Fix file duplication and disable symbol stripping (the compatible way).
     packagingOptions {
         exclude 'META-INF/okio.kotlin_module'
         doNotStrip '**/lib*.so'
