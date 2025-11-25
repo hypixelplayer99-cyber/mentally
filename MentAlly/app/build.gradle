@@ -1,12 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
-// We removed the conflicting 'repositories' block here.
-
 android {
     // UPDATED: Target Android 14 (API 34)
     compileSdkVersion 34
-    buildToolsVersion "30.0.3" // Stable Build Tools Version
+    buildToolsVersion "30.0.3" // Stable Build Tools Version (to avoid corrupted 34.0.0)
     
     // FIX 1: Explicitly set NDK version available on CI runner.
     ndkVersion '26.3.11579264'
@@ -25,6 +23,7 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        // Build types structure (empty debug block is fine)
         debug {}
     }
     
@@ -36,9 +35,8 @@ android {
 }
 
 dependencies {
-    // CRITICAL FIX: REMOVED the platform('com.google.firebase:firebase-bom:...') line.
-    // Instead, we define the version explicitly for every Firebase module.
-    def firebase_core_version = '32.9.0' // Using the same version as the failed BoM
+    // CRITICAL FIX: Removed BoM and define explicit, compatible versions to resolve "Could not find" errors.
+    def firebase_core_version = '20.0.0' // Known stable version compatible with Firebase UI 9.x
     def firebase_ui_version = '9.0.0'
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
