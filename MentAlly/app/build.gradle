@@ -1,17 +1,7 @@
-// app/build.gradle
-
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-        maven { url "https://jitpack.io" }
-    }
-}
-
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
-// Removed the redundant repositories block that was here before
+// We removed the conflicting 'repositories' block here.
 
 android {
     // UPDATED: Target Android 14 (API 34)
@@ -35,7 +25,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        // Build types structure
         debug {}
     }
     
@@ -47,10 +36,9 @@ android {
 }
 
 dependencies {
-    // Firebase BoM (Bill of Materials) for consistent versions
-    implementation platform('com.google.firebase:firebase-bom:32.9.0')
-    
-    // Variable for Firebase UI.
+    // CRITICAL FIX: REMOVED the platform('com.google.firebase:firebase-bom:...') line.
+    // Instead, we define the version explicitly for every Firebase module.
+    def firebase_core_version = '32.9.0' // Using the same version as the failed BoM
     def firebase_ui_version = '9.0.0'
     
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -62,14 +50,14 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0' 
     
-    // Firebase Core, now using BoM (no version needed)
-    implementation 'com.google.firebase:firebase-storage'
-    implementation 'com.google.firebase:firebase-database'
-    implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-auth'
-    implementation 'com.google.firebase:firebase-firestore'
+    // Firebase Core - Versions explicitly defined (NO BOM)
+    implementation "com.google.firebase:firebase-storage:$firebase_core_version"
+    implementation "com.google.firebase:firebase-database:$firebase_core_version"
+    implementation "com.google.firebase:firebase-analytics:$firebase_core_version"
+    implementation "com.google.firebase:firebase-auth:$firebase_core_version"
+    implementation "com.google.firebase:firebase-firestore:$firebase_core_version"
     
-    // Firebase UI (Updated to 9.0.0)
+    // Firebase UI 
     implementation "com.firebaseui:firebase-ui-firestore:$firebase_ui_version"
     implementation "com.firebaseui:firebase-ui-auth:$firebase_ui_version"
     
@@ -86,4 +74,3 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
-//added all firebase implementations to easily connect the app to the firebase database.
