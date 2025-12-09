@@ -6,28 +6,21 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        // AGP 8.9.0 is already set, which is compatible with a newer Google Services plugin
         classpath 'com.android.tools.build:gradle:8.9.0'
-        classpath 'com.google.gms:google-services:4.3.3'
+        
+        // CRITICAL FIX: Update Google Services plugin to a version compatible with AGP 8.9.0
+        classpath 'com.google.gms:google-services:4.4.1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
-// CRITICAL FIX: Forces Groovy/runtime compatibility to a stable version (Java 8 compatibility).
-// This resolves the ReflectionCache/Java7 NoClassDefFoundError by overriding internal dependencies.
-configurations.all {
-    resolutionStrategy {
-        eachDependency { details ->
-            if (details.requested.group == 'org.codehaus.groovy') {
-                details.useVersion '2.5.14' 
-            }
-        }
-    }
-}
+// ⚠️ REMOVED the configurations.all Groovy override block. 
+// This is not necessary with Gradle 8.11.1 and AGP 8.x.
 
 allprojects {
     repositories {
-        // CRITICAL FIX: Ensure Google and MavenCentral are defined for ALL modules
         google()
         mavenCentral()
 
